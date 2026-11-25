@@ -1,12 +1,4 @@
-import http from "node:http";
-const __apiPort = Number(process.env.PORT || 4000);
-http.createServer((_req, res) => {
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify({ ok: true, service: "interview-api" }));
-}).listen(__apiPort, "0.0.0.0", () => {
-  console.log(`[api-port] Listening on 0.0.0.0:${__apiPort}`);
-});
-import dotenv from "dotenv";
+﻿import dotenv from "dotenv";
 import path from "node:path";
 import http from "node:http";
 import crypto from "node:crypto";
@@ -359,4 +351,5 @@ await seedProblemsIfEmpty();
 await ensureReplayBucket().catch((e) => console.warn("[storage] S3 skipped:", e.message));
 
 server.listen(PORT, () => console.log(`[api] Running on http://localhost:${PORT}`));
+
 

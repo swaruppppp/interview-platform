@@ -216,15 +216,8 @@ process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
 
 
-import http from "node:http";
-const __renderPort = Number(process.env.PORT || 10000);
-http
-  .createServer((_req, res) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("ok");
-  })
-  .listen(__renderPort, "0.0.0.0", () => {
-    console.log(`[worker-health] Listening on 0.0.0.0:${__renderPort}`);
-  });
+
+});
+
 
 
