@@ -159,6 +159,7 @@ const worker = new Worker<SubmissionJobPayload>(
                 expectedOutput: tc.expectedOutput.trim(),
                 stderr: exec.stderr || undefined,
               }),
+      });
       }
 
       const event: SubmissionVerdictEvent = {
@@ -204,6 +205,7 @@ async function shutdown() {
 }
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+
 
 
 
