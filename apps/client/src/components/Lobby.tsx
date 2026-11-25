@@ -1,3 +1,4 @@
+import { API_BASE } from "../lib/api";
 import { useEffect, useState } from "react";
 import { Code2, PlusCircle, LogIn, ShieldCheck, UserCheck } from "lucide-react";
 import { api, type ProblemDTO } from "../lib/api";
@@ -193,4 +194,5 @@ export function Lobby({ initialRoomCode = "", onEnterRoom }: LobbyProps) {
     </div>
   );
 }
+
 
