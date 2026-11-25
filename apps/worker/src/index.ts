@@ -1,3 +1,11 @@
+import http from "node:http";
+const __workerPort = Number(process.env.PORT || 10000);
+http.createServer((_req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("worker-ok");
+}).listen(__workerPort, "0.0.0.0", () => {
+  console.log(`[worker-port] Listening on 0.0.0.0:${__workerPort}`);
+});
 import dotenv from "dotenv";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -223,3 +231,4 @@ http
   .listen(__renderPort, "0.0.0.0", () => {
     console.log(`[worker-health] Listening on 0.0.0.0:${__renderPort}`);
   });
+
