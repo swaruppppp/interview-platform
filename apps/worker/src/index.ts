@@ -206,3 +206,9 @@ async function shutdown() {
 }
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+
+import http from "node:http";
+const HEALTH_PORT = Number(process.env.PORT ?? 0);
+if (HEALTH_PORT > 0) {
+  http.createServer((_req, res) => { res.writeHead(200); res.end("worker-ok"); }).listen(HEALTH_PORT);
+}
