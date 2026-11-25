@@ -25,7 +25,7 @@ export function Lobby({ initialRoomCode = "", onEnterRoom }: LobbyProps) {
         setProblems(list);
         if (list[0]) setSelectedProblemId(list[0]._id);
       })
-      .catch((err) => setError(`Cannot reach API at localhost:4000 (${err.message})`));
+      .catch((err) => setError(`Cannot reach API at ${API_BASE} (${err.message})`));
   }, []);
 
   async function handleCreate() {
@@ -70,7 +70,7 @@ export function Lobby({ initialRoomCode = "", onEnterRoom }: LobbyProps) {
             CodeAssess Live Interview
           </h1>
           <p className="text-sm text-slate-400">
-            Open two browser tabs — one as Interviewer and one as Candidate — using the same Room Code to test live collaboration.
+            Open two browser tabs ??? one as Interviewer and one as Candidate ??? using the same Room Code to test live collaboration.
           </p>
         </div>
 
@@ -193,3 +193,4 @@ export function Lobby({ initialRoomCode = "", onEnterRoom }: LobbyProps) {
     </div>
   );
 }
+

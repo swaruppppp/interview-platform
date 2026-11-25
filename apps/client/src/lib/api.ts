@@ -10,7 +10,7 @@ import type {
   VerdictStatus,
 } from "@platform/shared";
 
-export const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+export const API_BASE = import.meta.env.VITE_API_URL ?? "https://codeassess-api.onrender.com";
 
 export interface ProblemDTO {
   _id: string;
@@ -117,3 +117,4 @@ export const api = {
 export function createRoomSocket(): Socket {
   return io(API_BASE, { transports: ["websocket", "polling"] });
 }
+
