@@ -18,7 +18,7 @@ import { copilotRouter } from "./routes/copilot.js";
 dotenv.config({ path: path.resolve(process.cwd(), "../../.env") });
 dotenv.config();
 
-const PORT = Number(process.env.PORT ?? 4000);
+const PORT = Number(process.env.PORT || 4000);
 const REDIS_URL = process.env.REDIS_URL ?? "redis://127.0.0.1:6379";
 const MONGO_URI = process.env.MONGO_URI ?? "mongodb://127.0.0.1:27017/interview_platform";
 

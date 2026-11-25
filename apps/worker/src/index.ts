@@ -212,3 +212,14 @@ const HEALTH_PORT = Number(process.env.PORT ?? 0);
 if (HEALTH_PORT > 0) {
   http.createServer((_req, res) => { res.writeHead(200); res.end("worker-ok"); }).listen(HEALTH_PORT);
 }
+
+import http from "node:http";
+const __renderPort = Number(process.env.PORT || 10000);
+http
+  .createServer((_req, res) => {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("ok");
+  })
+  .listen(__renderPort, "0.0.0.0", () => {
+    console.log(`[worker-health] Listening on 0.0.0.0:${__renderPort}`);
+  });
