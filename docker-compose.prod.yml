@@ -1,0 +1,71 @@
+services:
+  mongodb:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  s3:
+    image: chrislusf/seaweedfs
+    restart: unless-stopped
+    command: server -s3 -s3.port=8333
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+      - redis
+      - s3
+    env_file:
+      - .env
+    environment:
+      - PORT=4000
+      - MONGO_URI=mongodb://mongodb:27017/interview_platform
+      - REDIS_URL=redis://redis:6379
+      - S3_ENDPOINT=http://s3:8333
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+      - redis
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/interview_platform
+      - REDIS_URL=redis://redis:6379
+      - WORKER_CONCURRENCY=4
+      - IN_DOCKER=true
+      - SANDBOX_RUNS_ROOT=/tmp-runs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.tmp-runs:/tmp-runs
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  mongo_data:
+  caddy_data:
+  caddy_config:
