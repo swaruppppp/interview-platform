@@ -1,0 +1,33 @@
+{
+  "timestamp": "2026-11-25T12:16:28.027Z",
+  "wsCollaboration": {
+    "events": 50,
+    "p50Ms": 1.83,
+    "p95Ms": 9.41,
+    "maxMs": 52.09,
+    "passedUnder250ms": true
+  },
+  "queueStress": {
+    "totalSubmissions": 1000,
+    "enqueueErrors": 0,
+    "enqueueDurationSec": 8.83,
+    "enqueueRps": 113.2,
+    "apiAcceptP50Ms": 394.4,
+    "apiAcceptP95Ms": 550.58,
+    "totalDrainSec": 57.95,
+    "avgThroughputJobsPerSec": 17.26,
+    "verdicts": {
+      "WA": 1000
+    },
+    "e2eLatencyMs": {
+      "p50": 26385,
+      "p95": 46703,
+      "max": 48724
+    },
+    "containerExecMs": {
+      "p50": 985,
+      "p95": 1326,
+      "max": 1818
+    }
+  }
+}

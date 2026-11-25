@@ -35,6 +35,7 @@ const RoomSchema = new mongoose.Schema(
       communication: { type: Number, min: 0, max: 5, default: 0 },
     },
     snapshotSeq: { type: Number, default: 0 },
+    skipSnapshots: { type: Boolean, default: false },
     blueprint: { type: mongoose.Schema.Types.Mixed, default: null },
   },
   { timestamps: true }
@@ -52,6 +53,7 @@ const SubmissionSchema = new mongoose.Schema(
     maxRuntimeMs: { type: Number, default: 0 },
     results: { type: Array, default: [] },
     compileError: String,
+    completedAt: Date,
   },
   { timestamps: true }
 );

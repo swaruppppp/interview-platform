@@ -35,10 +35,14 @@ const submissionQueue = new Queue<SubmissionJobPayload>("code-submissions", {
   connection: redisConn,
 });
 
+const skipSnapshotRooms = new Set<string>();
+
 await redisSub.subscribe("submission:verdicts");
 redisSub.on("message", async (_channel, message) => {
   const verdict: SubmissionVerdictEvent = JSON.parse(message);
   io.to(verdict.roomCode).emit("submission:verdict", verdict);
+
+  if (skipSnapshotRooms.has(verdict.roomCode)) return;
 
   const sub = await SubmissionModel.findById(verdict.submissionId).lean();
   if (sub) {
@@ -65,18 +69,20 @@ io.on("connection", (socket) => {
     socket.to(code).emit("room:participant-joined", { id: socket.id, role, name });
   });
 
-  socket.on("code:change", async ({ roomCode, code, language }) => {
+  socket.on("code:change", async ({ roomCode, code, language, sentAt }) => {
     const room = String(roomCode).toUpperCase();
-    socket.to(room).emit("code:update", { code, senderId: socket.id });
+    socket.to(room).emit("code:update", { code, senderId: socket.id, sentAt });
     await RoomModel.updateOne({ code: room }, { currentCode: code });
 
-    recordSnapshot({
-      roomCode: room,
-      eventType: "code_edit",
-      language: (language ?? "cpp") as Language,
-      code,
-      throttle: true,
-    }).catch(() => {});
+    if (!skipSnapshotRooms.has(room)) {
+      recordSnapshot({
+        roomCode: room,
+        eventType: "code_edit",
+        language: (language ?? "cpp") as Language,
+        code,
+        throttle: true,
+      }).catch(() => {});
+    }
   });
 
   socket.on("lang:change", async ({ roomCode, language, starterCode }) => {
@@ -84,12 +90,14 @@ io.on("connection", (socket) => {
     socket.to(room).emit("lang:update", { language, code: starterCode });
     await RoomModel.updateOne({ code: room }, { language, currentCode: starterCode });
 
-    recordSnapshot({
-      roomCode: room,
-      eventType: "lang_change",
-      language: language as Language,
-      code: starterCode ?? "",
-    }).catch(() => {});
+    if (!skipSnapshotRooms.has(room)) {
+      recordSnapshot({
+        roomCode: room,
+        eventType: "lang_change",
+        language: language as Language,
+        code: starterCode ?? "",
+      }).catch(() => {});
+    }
   });
 
   socket.on("cursor:move", ({ roomCode, position, name }) => {
@@ -116,6 +124,7 @@ app.post("/api/rooms", async (req, res) => {
     : await ProblemModel.findOne();
   if (!problem) return res.status(404).json({ error: "No problem found" });
 
+  const skipSnapshots = Boolean(req.body.skipSnapshots);
   const code = crypto.randomBytes(3).toString("hex").toUpperCase();
   const starterCode = problem.starterCode?.cpp ?? "";
   const room = await RoomModel.create({
@@ -123,15 +132,20 @@ app.post("/api/rooms", async (req, res) => {
     problemId: problem._id,
     language: "cpp",
     currentCode: starterCode,
+    skipSnapshots,
   });
 
-  await recordSnapshot({
-    roomCode: code,
-    eventType: "room_created",
-    language: "cpp",
-    code: starterCode,
-    meta: { problemSlug: problem.slug },
-  }).catch((err) => console.error("[storage] Initial snapshot failed:", err.message));
+  if (skipSnapshots) {
+    skipSnapshotRooms.add(code);
+  } else {
+    recordSnapshot({
+      roomCode: code,
+      eventType: "room_created",
+      language: "cpp",
+      code: starterCode,
+      meta: { problemSlug: problem.slug },
+    }).catch((err) => console.error("[storage] Initial snapshot failed:", err.message));
+  }
 
   res.status(201).json({ room, problem });
 });
@@ -177,13 +191,15 @@ app.patch("/api/rooms/:code/evaluation", async (req, res) => {
   }
   await room.save();
 
-  await recordSnapshot({
-    roomCode,
-    eventType: "evaluation_updated",
-    language: room.language as Language,
-    code: room.currentCode,
-    meta: { rubric: room.rubric },
-  }).catch(() => {});
+  if (!room.skipSnapshots) {
+    recordSnapshot({
+      roomCode,
+      eventType: "evaluation_updated",
+      language: room.language as Language,
+      code: room.currentCode,
+      meta: { rubric: room.rubric },
+    }).catch(() => {});
+  }
 
   res.json({ roomCode, rubric: room.rubric, interviewerNotes: room.interviewerNotes });
 });
@@ -197,7 +213,7 @@ app.get("/api/rooms/:code/replay", async (req, res) => {
     const snapshots = await getSessionReplay(roomCode);
     res.json({ roomCode, count: snapshots.length, snapshots });
   } catch (err: any) {
-    res.status(500).json({ error: "Failed to fetch replay from MinIO/S3", details: err.message });
+    res.status(500).json({ error: "Failed to fetch replay from S3", details: err.message });
   }
 });
 
@@ -206,6 +222,7 @@ const SubmitSchema = z.object({
   problemId: z.string().min(10),
   language: z.enum(["cpp", "python", "javascript"]),
   code: z.string().min(1).max(65536),
+  singleTestOnly: z.boolean().optional(),
 });
 
 app.post("/api/submissions", async (req, res) => {
@@ -216,20 +233,28 @@ app.post("/api/submissions", async (req, res) => {
   const problem = await ProblemModel.findById(parsed.data.problemId);
   if (!problem) return res.status(404).json({ error: "Problem not found" });
 
-  const submission = await SubmissionModel.create({
-    ...parsed.data,
-    roomCode,
-    status: "QUEUED",
-    totalCount: problem.testCases.length,
-  });
+  const selectedTests = parsed.data.singleTestOnly
+    ? problem.testCases.slice(0, 1)
+    : problem.testCases;
 
-  await recordSnapshot({
+  const submission = await SubmissionModel.create({
     roomCode,
-    eventType: "submission_queued",
+    problemId: parsed.data.problemId,
     language: parsed.data.language,
     code: parsed.data.code,
-    meta: { submissionId: submission._id.toString() },
-  }).catch(() => {});
+    status: "QUEUED",
+    totalCount: selectedTests.length,
+  });
+
+  if (!skipSnapshotRooms.has(roomCode)) {
+    recordSnapshot({
+      roomCode,
+      eventType: "submission_queued",
+      language: parsed.data.language,
+      code: parsed.data.code,
+      meta: { submissionId: submission._id.toString() },
+    }).catch(() => {});
+  }
 
   await submissionQueue.add("execute", {
     submissionId: submission._id.toString(),
@@ -238,7 +263,7 @@ app.post("/api/submissions", async (req, res) => {
     language: parsed.data.language,
     code: parsed.data.code,
     timeLimitMs: problem.timeLimitMs,
-    testCases: problem.testCases.map((tc) => ({
+    testCases: selectedTests.map((tc) => ({
       id: tc.id,
       input: tc.input,
       expectedOutput: tc.expectedOutput,
@@ -254,6 +279,69 @@ app.get("/api/submissions/:id", async (req, res) => {
   const sub = await SubmissionModel.findById(req.params.id);
   if (!sub) return res.status(404).json({ error: "Submission not found" });
   res.json(sub);
+});
+
+// Sprint 4: Observability & Stress Test Telemetry
+app.get("/api/metrics/queue", async (_req, res) => {
+  const counts = await submissionQueue.getJobCounts(
+    "waiting",
+    "active",
+    "completed",
+    "failed",
+    "delayed"
+  );
+  res.json(counts);
+});
+
+function percentile(sorted: number[], p: number): number {
+  if (sorted.length === 0) return 0;
+  const idx = Math.min(sorted.length - 1, Math.ceil((p / 100) * sorted.length) - 1);
+  return sorted[idx];
+}
+
+app.get("/api/metrics/room/:code", async (req, res) => {
+  const roomCode = req.params.code.toUpperCase();
+  const subs = await SubmissionModel.find(
+    { roomCode },
+    { status: 1, maxRuntimeMs: 1, createdAt: 1, updatedAt: 1, completedAt: 1 }
+  ).lean();
+
+  const byStatus: Record<string, number> = {};
+  const e2eMs: number[] = [];
+  const execMs: number[] = [];
+
+  for (const s of subs) {
+    byStatus[s.status] = (byStatus[s.status] ?? 0) + 1;
+    if (s.status !== "QUEUED" && s.status !== "RUNNING") {
+      const doneAt = s.completedAt ? new Date(s.completedAt).getTime() : new Date(s.updatedAt).getTime();
+      const createdAt = new Date(s.createdAt).getTime();
+      e2eMs.push(Math.max(0, doneAt - createdAt));
+      execMs.push(s.maxRuntimeMs ?? 0);
+    }
+  }
+
+  e2eMs.sort((a, b) => a - b);
+  execMs.sort((a, b) => a - b);
+
+  const completed = subs.length - (byStatus.QUEUED ?? 0) - (byStatus.RUNNING ?? 0);
+
+  res.json({
+    roomCode,
+    total: subs.length,
+    completed,
+    inFlight: subs.length - completed,
+    byStatus,
+    e2eLatencyMs: {
+      p50: percentile(e2eMs, 50),
+      p95: percentile(e2eMs, 95),
+      max: e2eMs[e2eMs.length - 1] ?? 0,
+    },
+    execRuntimeMs: {
+      p50: percentile(execMs, 50),
+      p95: percentile(execMs, 95),
+      max: execMs[execMs.length - 1] ?? 0,
+    },
+  });
 });
 
 app.use("/api/copilot", copilotRouter);

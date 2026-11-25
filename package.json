@@ -11,10 +11,11 @@
     "sandboxes:build": "docker build -t sandbox-cpp ./sandboxes/cpp && docker build -t sandbox-py ./sandboxes/py && docker build -t sandbox-js ./sandboxes/js",
     "dev:api": "npm run dev --workspace=apps/api",
     "dev:worker": "npm run dev --workspace=apps/worker",
-    "test:smoke": "node scripts/smoke-test.mjs"
-  },
-  "allowScripts": {
-    "esbuild@0.28.2": true,
-    "msgpackr-extract@3.0.7": true
+    "dev:client": "npm run dev --workspace=apps/client",
+    "workers:scale": "docker compose --profile scale up -d --build --scale worker=4",
+    "workers:down": "docker compose --profile scale stop worker && docker compose --profile scale rm -f worker",
+    "test:smoke": "node scripts/smoke-test.mjs",
+    "test:stress:quick": "node scripts/stress-test.mjs --count=100",
+    "test:stress": "node scripts/stress-test.mjs --count=1000"
   }
 }
