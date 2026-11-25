@@ -5,7 +5,6 @@ http.createServer((_req, res) => {
   res.end("worker-ok");
 }).listen(__workerPort, "0.0.0.0", () => {
   console.log(`[worker-port] Listening on 0.0.0.0:${__workerPort}`);
-});
 import dotenv from "dotenv";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -167,7 +166,6 @@ const worker = new Worker<SubmissionJobPayload>(
                 expectedOutput: tc.expectedOutput.trim(),
                 stderr: exec.stderr || undefined,
               }),
-        });
       }
 
       const event: SubmissionVerdictEvent = {
@@ -197,7 +195,6 @@ async function persistAndPublish(event: SubmissionVerdictEvent) {
     results: event.results,
     compileError: event.compileError,
     completedAt: new Date(),
-  });
   await redisPub.publish("submission:verdicts", JSON.stringify(event));
 }
 
@@ -217,7 +214,6 @@ process.on("SIGTERM", shutdown);
 
 
 
-});
 
 
 
