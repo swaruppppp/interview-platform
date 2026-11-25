@@ -91,7 +91,7 @@ const worker = new Worker<SubmissionJobPayload>(
     await SubmissionModel.findByIdAndUpdate(submissionId, { status: "RUNNING" });
 
     try {
-      if (language === "cpp") {
+      if (language === "cpp" && process.env.SANDBOX_MODE === "docker") {
         const comp = await runContainer(
           cfg.image,
           hostWorkDir,
@@ -130,7 +130,7 @@ const worker = new Worker<SubmissionJobPayload>(
       let maxRuntimeMs = 0;
 
       for (const tc of testCases) {
-        const exec = await runContainer(cfg.image, hostWorkDir, runCmd, tc.input, timeLimitMs, true);
+        const exec = await runContainer(cfg.image, hostWorkDir, runCmd, tc.input, timeLimitMs, true, code);
         maxRuntimeMs = Math.max(maxRuntimeMs, exec.runtimeMs);
 
         let tcStatus: VerdictStatus = "AC";

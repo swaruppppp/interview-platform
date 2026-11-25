@@ -348,6 +348,6 @@ app.use("/api/copilot", copilotRouter);
 
 await mongoose.connect(MONGO_URI);
 await seedProblemsIfEmpty();
-await ensureReplayBucket();
+await ensureReplayBucket().catch((e) => console.warn("[storage] S3 skipped:", e.message));
 
 server.listen(PORT, () => console.log(`[api] Running on http://localhost:${PORT}`));
