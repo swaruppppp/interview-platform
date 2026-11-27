@@ -173,15 +173,15 @@ export function InterviewerDrawer({
   const activeSnap = snapshots[replayIdx];
 
   return (
-    <aside className="w-[380px] shrink-0 border-l border-slate-800 bg-slate-900/70 flex flex-col h-full overflow-hidden">
+    <aside className="w-[380px] shrink-0 border-l border-zinc-800 bg-zinc-900/70 flex flex-col h-full overflow-hidden">
       {/* Drawer Tabs */}
-      <div className="grid grid-cols-3 border-b border-slate-800 bg-slate-950/60">
+      <div className="grid grid-cols-3 border-b border-zinc-800 bg-zinc-950/60">
         <button
           onClick={() => setTab("copilot")}
           className={`flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold border-b-2 transition ${
             tab === "copilot"
-              ? "border-indigo-500 text-indigo-300 bg-indigo-500/5"
-              : "border-transparent text-slate-400 hover:text-white"
+              ? "border-blue-500 text-blue-300 bg-blue-500/5"
+              : "border-transparent text-zinc-400 hover:text-white"
           }`}
         >
           <Sparkles className="w-3.5 h-3.5" />
@@ -191,8 +191,8 @@ export function InterviewerDrawer({
           onClick={() => setTab("rubric")}
           className={`flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold border-b-2 transition ${
             tab === "rubric"
-              ? "border-indigo-500 text-indigo-300 bg-indigo-500/5"
-              : "border-transparent text-slate-400 hover:text-white"
+              ? "border-blue-500 text-blue-300 bg-blue-500/5"
+              : "border-transparent text-zinc-400 hover:text-white"
           }`}
         >
           <ClipboardCheck className="w-3.5 h-3.5" />
@@ -205,8 +205,8 @@ export function InterviewerDrawer({
           }}
           className={`flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold border-b-2 transition ${
             tab === "replay"
-              ? "border-indigo-500 text-indigo-300 bg-indigo-500/5"
-              : "border-transparent text-slate-400 hover:text-white"
+              ? "border-blue-500 text-blue-300 bg-blue-500/5"
+              : "border-transparent text-zinc-400 hover:text-white"
           }`}
         >
           <History className="w-3.5 h-3.5" />
@@ -227,11 +227,11 @@ export function InterviewerDrawer({
             {/* Code & Complexity Analyzer */}
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
                   Live Code & Failure Analyzer
                 </h3>
                 {analysis && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono">
                     {analysis.mode}
                   </span>
                 )}
@@ -239,41 +239,41 @@ export function InterviewerDrawer({
               <button
                 onClick={handleAnalyze}
                 disabled={analyzing}
-                className="w-full py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-xs font-semibold text-white flex items-center justify-center gap-2 transition"
+                className="w-full py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-xs font-semibold text-white flex items-center justify-center gap-2 transition"
               >
                 {analyzing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                 Analyze {latestSubmissionId ? "Latest Submission" : "Current Code"}
               </button>
 
               {analysis && (
-                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2.5 text-xs">
+                <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 space-y-2.5 text-xs">
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                      <div className="text-[10px] text-slate-500">Time Complexity</div>
-                      <div className="font-mono font-bold text-indigo-300">
+                    <div className="p-2 rounded bg-zinc-900 border border-zinc-800">
+                      <div className="text-[10px] text-zinc-500">Time Complexity</div>
+                      <div className="font-mono font-bold text-blue-300">
                         {analysis.data.estimatedTimeComplexity}
                       </div>
                     </div>
-                    <div className="p-2 rounded bg-slate-900 border border-slate-800">
-                      <div className="text-[10px] text-slate-500">Space Complexity</div>
+                    <div className="p-2 rounded bg-zinc-900 border border-zinc-800">
+                      <div className="text-[10px] text-zinc-500">Space Complexity</div>
                       <div className="font-mono font-bold text-emerald-300">
                         {analysis.data.estimatedSpaceComplexity}
                       </div>
                     </div>
                   </div>
-                  <p className="text-slate-300">{analysis.data.complexityReasoning}</p>
+                  <p className="text-zinc-300">{analysis.data.complexityReasoning}</p>
                   {analysis.data.failureRootCause && (
                     <div className="p-2 rounded bg-rose-500/10 border border-rose-500/30 text-rose-200">
                       <strong>Failure Diagnosis:</strong> {analysis.data.failureRootCause}
                     </div>
                   )}
                   <div>
-                    <div className="text-[11px] font-semibold text-slate-400 mb-1">Adaptive Follow-Ups</div>
+                    <div className="text-[11px] font-semibold text-zinc-400 mb-1">Adaptive Follow-Ups</div>
                     <ul className="space-y-1.5">
                       {analysis.data.adaptiveFollowUps.map((f, i) => (
-                        <li key={i} className="p-2 rounded bg-slate-900/80 border border-slate-800">
-                          <div className="text-slate-200">{f.question}</div>
-                          <div className="text-[10px] text-indigo-400 mt-0.5">Signal: {f.targetSignal}</div>
+                        <li key={i} className="p-2 rounded bg-zinc-900/80 border border-zinc-800">
+                          <div className="text-zinc-200">{f.question}</div>
+                          <div className="text-[10px] text-blue-400 mt-0.5">Signal: {f.targetSignal}</div>
                         </li>
                       ))}
                     </ul>
@@ -282,31 +282,31 @@ export function InterviewerDrawer({
               )}
             </div>
 
-            <hr className="border-slate-800" />
+            <hr className="border-zinc-800" />
 
             {/* JD -> Assessment Blueprint */}
             <div className="space-y-2.5">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
                 JD → Assessment Blueprint
               </h3>
               <textarea
                 rows={3}
                 value={jdText}
                 onChange={(e) => setJdText(e.target.value)}
-                className="w-full p-2.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 rounded-lg bg-zinc-950 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-blue-500"
                 placeholder="Paste Job Description..."
               />
               <button
                 onClick={handleBlueprint}
                 disabled={genBp || jdText.trim().length < 20}
-                className="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-xs font-semibold text-white flex items-center justify-center gap-2 transition"
+                className="w-full py-2 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 text-xs font-semibold text-white flex items-center justify-center gap-2 transition"
               >
                 {genBp ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                 Generate Blueprint (Human-Reviewed)
               </button>
 
               {blueprint && (
-                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2.5 text-xs">
+                <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 space-y-2.5 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-white">{blueprint.data.roleTitle}</span>
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
@@ -315,18 +315,18 @@ export function InterviewerDrawer({
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {blueprint.data.coreCompetencies.map((c, i) => (
-                      <span key={i} className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10px] text-slate-300">
+                      <span key={i} className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-300">
                         {c}
                       </span>
                     ))}
                   </div>
                   <div className="space-y-1.5">
                     {blueprint.data.recommendedProblems.map((p, i) => (
-                      <div key={i} className="p-2 rounded bg-slate-900 border border-slate-800">
-                        <div className="font-medium text-indigo-300">
+                      <div key={i} className="p-2 rounded bg-zinc-900 border border-zinc-800">
+                        <div className="font-medium text-blue-300">
                           {p.title} ({p.difficulty})
                         </div>
-                        <div className="text-slate-400 text-[11px] mt-0.5">{p.promptSummary}</div>
+                        <div className="text-zinc-400 text-[11px] mt-0.5">{p.promptSummary}</div>
                         <div className="text-[10px] text-emerald-400 font-mono mt-1">{p.expectedComplexity}</div>
                       </div>
                     ))}
@@ -344,8 +344,8 @@ export function InterviewerDrawer({
               {RUBRIC_LABELS.map(({ key, label }) => (
                 <div key={key} className="space-y-1">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-300 font-medium">{label}</span>
-                    <span className="font-mono font-bold text-indigo-300">{rubric[key]} / 5</span>
+                    <span className="text-zinc-300 font-medium">{label}</span>
+                    <span className="font-mono font-bold text-blue-300">{rubric[key]} / 5</span>
                   </div>
                   <input
                     type="range"
@@ -354,14 +354,14 @@ export function InterviewerDrawer({
                     step={1}
                     value={rubric[key]}
                     onChange={(e) => setRubric({ ...rubric, [key]: Number(e.target.value) })}
-                    className="w-full accent-indigo-500"
+                    className="w-full accent-blue-500"
                   />
                 </div>
               ))}
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1.5">
+              <label className="block text-xs font-medium text-zinc-400 mb-1.5">
                 Interviewer Live Notes (Private)
               </label>
               <textarea
@@ -369,7 +369,7 @@ export function InterviewerDrawer({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Note clarification questions, tradeoffs discussed, debugging discipline..."
-                className="w-full p-2.5 rounded-lg bg-slate-950 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 rounded-lg bg-zinc-950 border border-zinc-700 text-xs text-zinc-200 focus:outline-none focus:border-blue-500"
               />
             </div>
 
@@ -377,7 +377,7 @@ export function InterviewerDrawer({
               <button
                 onClick={handleSaveEvaluation}
                 disabled={savingEval}
-                className="py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center justify-center gap-1.5 transition"
+                className="py-2 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-white flex items-center justify-center gap-1.5 transition"
               >
                 <Save className="w-3.5 h-3.5" />
                 {savingEval ? "Saving..." : "Save Rubric"}
@@ -385,7 +385,7 @@ export function InterviewerDrawer({
               <button
                 onClick={handleEvidenceSummary}
                 disabled={loadingEvidence}
-                className="py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white flex items-center justify-center gap-1.5 transition"
+                className="py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center justify-center gap-1.5 transition"
               >
                 {loadingEvidence ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                 Evidence Report
@@ -395,24 +395,24 @@ export function InterviewerDrawer({
             {evalSavedMsg && <p className="text-[11px] text-emerald-400">{evalSavedMsg}</p>}
 
             {evidence && (
-              <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-3 text-xs">
+              <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 space-y-3 text-xs">
                 <div className="p-2 rounded bg-amber-500/10 border border-amber-500/30 text-amber-200 text-[11px] flex gap-2">
                   <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
                   <span>{evidence.data.nonAutonomousNotice}</span>
                 </div>
-                <p className="text-slate-300">{evidence.data.sessionOverview}</p>
+                <p className="text-zinc-300">{evidence.data.sessionOverview}</p>
                 <div className="space-y-2">
                   {evidence.data.rubricMapping.map((item) => (
-                    <div key={item.dimension} className="p-2 rounded bg-slate-900 border border-slate-800 space-y-1">
-                      <div className="flex justify-between font-semibold text-slate-200">
+                    <div key={item.dimension} className="p-2 rounded bg-zinc-900 border border-zinc-800 space-y-1">
+                      <div className="flex justify-between font-semibold text-zinc-200">
                         <span>{item.dimension}</span>
-                        <span className="text-indigo-300">{item.interviewerScore}/5</span>
+                        <span className="text-blue-300">{item.interviewerScore}/5</span>
                       </div>
                       {item.observedEvidence.map((ev, idx) => (
                         <div key={idx} className="text-[11px] text-emerald-300">+ {ev}</div>
                       ))}
                       {item.missingEvidence.map((m, idx) => (
-                        <div key={idx} className="text-[11px] text-slate-400">? {m}</div>
+                        <div key={idx} className="text-[11px] text-zinc-400">? {m}</div>
                       ))}
                     </div>
                   ))}
@@ -426,13 +426,13 @@ export function InterviewerDrawer({
         {tab === "replay" && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-300">
+              <span className="text-xs font-semibold text-zinc-300">
                 S3 Snapshots ({snapshots.length})
               </span>
               <button
                 onClick={handleLoadReplay}
                 disabled={loadingReplay}
-                className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 flex items-center gap-1.5"
+                className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 flex items-center gap-1.5"
               >
                 <RefreshCw className={`w-3 h-3 ${loadingReplay ? "animate-spin" : ""}`} />
                 Refresh
@@ -447,7 +447,7 @@ export function InterviewerDrawer({
                       if (replayIdx >= snapshots.length - 1) setReplayIdx(0);
                       setPlaying((p) => !p);
                     }}
-                    className="p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white"
+                    className="p-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white"
                   >
                     {playing ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
                   </button>
@@ -460,35 +460,35 @@ export function InterviewerDrawer({
                       setPlaying(false);
                       setReplayIdx(Number(e.target.value));
                     }}
-                    className="flex-1 accent-indigo-500"
+                    className="flex-1 accent-blue-500"
                   />
-                  <span className="text-xs font-mono text-slate-400">
+                  <span className="text-xs font-mono text-zinc-400">
                     #{activeSnap.seq}/{snapshots.length}
                   </span>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px] space-y-1">
+                <div className="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800 text-[11px] space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 font-mono">
+                    <span className="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 font-mono">
                       {activeSnap.eventType}
                     </span>
-                    <span className="text-slate-500 font-mono">
+                    <span className="text-zinc-500 font-mono">
                       {new Date(activeSnap.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
                   {activeSnap.meta && (
-                    <pre className="text-[10px] text-slate-400 overflow-x-auto pt-1">
+                    <pre className="text-[10px] text-zinc-400 overflow-x-auto pt-1">
                       {JSON.stringify(activeSnap.meta, null, 2)}
                     </pre>
                   )}
                 </div>
 
-                <pre className="p-3 rounded-lg bg-slate-950 border border-slate-800 font-mono text-[11px] text-slate-200 overflow-x-auto max-h-[360px] whitespace-pre">
+                <pre className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 font-mono text-[11px] text-zinc-200 overflow-x-auto max-h-[360px] whitespace-pre">
                   {activeSnap.code}
                 </pre>
               </div>
             ) : (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-zinc-500">
                 No snapshots loaded yet. Edit code or submit to capture replay frames in S3.
               </p>
             )}
